@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Quince — 15 minutos de español al día</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Karla:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --azul:#1d4e89; --azul-deep:#123258; --azul-soft:#e8eff7;
+  --sand:#faf6ee; --ink:#22242a; --marigold:#e8a51c; --marigold-deep:#b97d0a;
+  --ok:#2e7d4f; --bad:#b3402e; --card:#ffffff;
+  --disp:'Fraunces',serif; --body:'Karla',sans-serif;
+}
+body{font-family:var(--body);background:var(--sand);color:var(--ink);line-height:1.6}
+.tiles{height:14px;background:
+  repeating-linear-gradient(90deg,var(--azul) 0 28px,var(--marigold) 28px 34px,var(--azul-deep) 34px 62px,var(--sand) 62px 68px)}
+header{padding:34px 24px 22px;text-align:center}
+h1{font-family:var(--disp);font-weight:900;font-size:clamp(34px,6vw,52px);color:var(--azul-deep);letter-spacing:-0.01em}
+h1 em{font-style:normal;color:var(--marigold-deep)}
+.sub{color:#5a5e68;margin-top:6px;font-size:1.02rem}
+.daybar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:16px 20px 6px}
+.daychip{font-family:var(--body);font-weight:700;font-size:0.82rem;letter-spacing:0.06em;text-transform:uppercase;padding:8px 14px;border-radius:999px;border:2px solid var(--azul);background:transparent;color:var(--azul);cursor:pointer}
+.daychip.active{background:var(--azul);color:#fff}
+.timerwrap{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 0 4px}
+.timer{font-family:var(--disp);font-weight:900;font-size:1.6rem;color:var(--azul-deep);min-width:88px;text-align:center}
+.tbtn{font-weight:700;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;background:var(--marigold);color:#3a2b05}
+.tbtn.secondary{background:var(--azul-soft);color:var(--azul-deep)}
+main{max-width:760px;margin:0 auto;padding:18px 20px 80px}
+.step{background:var(--card);border:1px solid #e7e2d6;border-radius:16px;padding:26px 26px 22px;margin-bottom:22px;box-shadow:0 2px 12px rgba(29,78,137,0.05)}
+.step-tag{display:inline-block;font-weight:700;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:#fff;background:var(--azul);border-radius:6px;padding:4px 10px;margin-bottom:12px}
+.step-tag.gold{background:var(--marigold);color:#3a2b05}
+h2{font-family:var(--disp);font-weight:900;font-size:1.5rem;color:var(--azul-deep);margin-bottom:6px}
+.mins{font-size:0.88rem;color:#8a8d96;margin-bottom:14px}
+.lesson{background:var(--azul-soft);border-left:4px solid var(--azul);border-radius:0 10px 10px 0;padding:14px 18px;margin:10px 0 18px;font-size:0.98rem}
+.lesson b{color:var(--azul-deep)}
+.lesson .fr{color:#7a4f9e;font-weight:600}
+.ex{margin:14px 0}
+.ex-q{margin-bottom:6px}
+.ex-q .hint{color:#8a8d96;font-size:0.9rem}
+input.answer{font-family:var(--body);font-size:1rem;padding:9px 12px;border:2px solid #d8d3c6;border-radius:8px;width:min(240px,100%);background:#fffdf8}
+input.answer:focus{outline:none;border-color:var(--azul)}
+input.answer.ok{border-color:var(--ok);background:#eef7f1}
+input.answer.bad{border-color:var(--bad);background:#fbeeeb}
+.feedback{font-size:0.92rem;margin-top:4px;min-height:1.2em}
+.feedback.ok{color:var(--ok)} .feedback.bad{color:var(--bad)}
+.checkrow{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.check{font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;background:var(--azul);color:#fff}
+.score{font-weight:700;color:var(--azul-deep)}
+.accents{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}
+.acc{border:1px solid #d8d3c6;background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:1rem}
+.speak-item{border:1px solid #e7e2d6;border-radius:12px;padding:14px 16px;margin:10px 0;background:#fffdf8}
+.speak-src{font-weight:600}
+.speak-src .flag{font-size:0.8rem;color:#7a4f9e;font-weight:700;letter-spacing:0.08em;margin-right:8px}
+.reveal-btn{margin-top:8px;font-weight:700;border:2px solid var(--marigold);background:transparent;color:var(--marigold-deep);border-radius:8px;padding:6px 14px;cursor:pointer}
+.speak-es{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed #e0dbcd;color:var(--azul-deep);font-weight:600}
+.speak-es .note{display:block;font-weight:400;color:#6a6e78;font-size:0.9rem;margin-top:2px}
+.tipbox{background:#fdf4df;border-left:4px solid var(--marigold);border-radius:0 10px 10px 0;padding:12px 16px;font-size:0.95rem;margin-top:16px}
+footer{text-align:center;padding:26px;color:#8a8d96;font-size:0.9rem}
+@media(max-width:560px){ .step{padding:20px 16px} }
+</style>
+</head>
+<body>
+<div class="tiles"></div>
+<header>
+  <h1>Quince<em>.</em></h1>
+  <p class="sub">15 minutos al día · built for a French speaker who understands but wants to <b>speak</b></p>
+</header>
+
+<div class="daybar" id="daybar"></div>
+<div class="timerwrap">
+  <div class="timer" id="timer">15:00</div>
+  <button class="tbtn" id="startBtn" onclick="toggleTimer()">Start</button>
+  <button class="tbtn secondary" onclick="resetTimer()">Reset</button>
+</div>
+
+<main id="app"></main>
+
+<footer>Cycle repeats weekly — same grammar point, fresh muscle. Say every answer OUT LOUD: the mouth is the muscle you're training.</footer>
+
+<script>
+// ---------- 7 daily modules (rotate by weekday) ----------
+const MODULES = [
+{ // Sunday
+  name:"Fluidez", title:"Connectors & false friends (FR→ES)",
+  lesson:`Your French helps you understand — and betrays you when speaking. Watch these: <b>attendre</b> ≠ <b>atender</b> (esperar = to wait), <b>rester</b> ≠ <b>restar</b> (quedarse = to stay), <b>subir</b> in Spanish = to go UP (<span class="fr">monter</span>), <b>salir</b> = to go out (<span class="fr">sortir</span>), <b>embarazada</b> = pregnant, NOT embarrassed (avergonzada). Fluency glue: <b>o sea</b> (c'est-à-dire), <b>de hecho</b> (en fait), <b>sin embargo</b> (pourtant), <b>por lo tanto</b> (donc), <b>en cuanto a</b> (quant à).`,
+  fill:[
+    {q:"Voy a ___ en casa esta noche. <span class='hint'>(rester)</span>", a:["quedarme"]},
+    {q:"Tenemos que ___ el autobús. <span class='hint'>(attendre)</span>", a:["esperar"]},
+    {q:"¿A qué hora quieres ___ esta noche? <span class='hint'>(sortir)</span>", a:["salir"]},
+    {q:"No funciona; ___, nadie lo ha probado. <span class='hint'>(en fait)</span>", a:["de hecho"]},
+    {q:"Es caro; ___, lo compraré. <span class='hint'>(pourtant / cependant)</span>", a:["sin embargo"]},
+    {q:"Ella está ___: el bebé nace en mayo. <span class='hint'>(enceinte)</span>", a:["embarazada"]}
+  ],
+  speak:[
+    {fr:"Quant au projet, je préfère attendre.", es:"En cuanto al proyecto, prefiero esperar."},
+    {fr:"En fait, je vais rester à la maison.", es:"De hecho, voy a quedarme en casa."},
+    {fr:"Il pleut ; pourtant, on va sortir.", es:"Llueve; sin embargo, vamos a salir."},
+    {fr:"C'est-à-dire, ce n'est pas un problème d'argent.", es:"O sea, no es un problema de dinero."},
+    {fr:"Donc, on monte au premier étage ?", es:"Por lo tanto, ¿subimos al primer piso?"}
+  ]
+},
+{ // Monday
+  name:"Ser / Estar", title:"Ser vs estar — the eternal one",
+  lesson:`French has one <span class="fr">être</span>; Spanish splits it. <b>SER</b> = identity, origin, profession, time, characteristics (soy belga, es tarde, es amable). <b>ESTAR</b> = location, states, ongoing actions, results (estoy en casa, está cansada, estamos hablando). The meaning-changers: <b>es aburrido</b> = boring / <b>está aburrido</b> = bored · <b>es listo</b> = clever / <b>está listo</b> = ready · <b>es rico</b> = rich / <b>está rico</b> = tasty.`,
+  fill:[
+    {q:"La reunión ___ a las tres. <span class='hint'>(time of event)</span>", a:["es"]},
+    {q:"¿Dónde ___ mis llaves? <span class='hint'>(location)</span>", a:["están","estan"]},
+    {q:"Este libro ___ muy aburrido. <span class='hint'>(boring, not bored)</span>", a:["es"]},
+    {q:"Ya ___ lista, ¡vámonos! <span class='hint'>(ready)</span>", a:["estoy"]},
+    {q:"Mi madre ___ profesora. <span class='hint'>(profession)</span>", a:["es"]},
+    {q:"La sopa ___ muy rica hoy. <span class='hint'>(tasty)</span>", a:["está","esta"]}
+  ],
+  speak:[
+    {fr:"Je suis fatigué mais je suis content.", es:"Estoy cansado pero estoy contento."},
+    {fr:"Elle est médecin et elle est très intelligente.", es:"Es médica y es muy inteligente."},
+    {fr:"Où est le restaurant ? Il est fermé aujourd'hui.", es:"¿Dónde está el restaurante? Está cerrado hoy."},
+    {fr:"La fête est chez moi, c'est samedi.", es:"La fiesta es en mi casa, es el sábado."},
+    {fr:"Nous sommes en train de manger.", es:"Estamos comiendo."}
+  ]
+},
+{ // Tuesday
+  name:"Pasado", title:"Pretérito vs imperfecto",
+  lesson:`Same logic as <span class="fr">passé composé vs imparfait</span> — but Spanish uses the SIMPLE past where French uses avoir/être + participle. <b>Pretérito</b> = completed event, moves the story (hablé, comí, fui). <b>Imperfecto</b> = background, habit, description (hablaba, comía, era). Formula: <i>Mientras <b>caminaba</b> (background), <b>vi</b> a Juan (event).</i> Irregulars to own: fui/fue, tuve, hice, dijo, pudo, estuvo.`,
+  fill:[
+    {q:"Ayer ___ (yo, ir) al mercado.", a:["fui"]},
+    {q:"Cuando era niño, ___ (jugar) al fútbol cada día.", a:["jugaba"]},
+    {q:"Mientras cocinaba, alguien ___ (llamar) a la puerta.", a:["llamó","llamo"]},
+    {q:"No ___ (yo, poder) dormir anoche.", a:["pude"]},
+    {q:"Antes ___ (nosotros, vivir) en Lyon.", a:["vivíamos","viviamos"]},
+    {q:"Ella me ___ (decir) la verdad ayer.", a:["dijo"]}
+  ],
+  speak:[
+    {fr:"Hier, j'ai mangé avec ma sœur et on a beaucoup parlé.", es:"Ayer comí con mi hermana y hablamos mucho."},
+    {fr:"Quand j'habitais en France, je marchais partout.", es:"Cuando vivía en Francia, caminaba por todas partes."},
+    {fr:"Il faisait beau, alors nous sommes sortis.", es:"Hacía buen tiempo, así que salimos."},
+    {fr:"Je n'ai pas pu venir parce que je travaillais.", es:"No pude venir porque estaba trabajando."},
+    {fr:"Elle a dit qu'elle était fatiguée.", es:"Dijo que estaba cansada."}
+  ]
+},
+{ // Wednesday
+  name:"Subjuntivo", title:"Present subjunctive — the speaking unlock",
+  lesson:`You already have this instinct from French (<span class="fr">il faut que tu viennes</span>) — Spanish just uses it MORE. Trigger it after: <b>querer que, esperar que, es importante que, para que, cuando</b> (future), <b>no creo que</b>. Form: take yo-form, swap the vowel — hable, coma, viva. Key irregulars: <b>sea, esté, vaya, tenga, haga, pueda, diga</b>.`,
+  fill:[
+    {q:"Quiero que ___ (tú, venir) mañana.", a:["vengas"]},
+    {q:"Es importante que ___ (nosotros, hablar) hoy.", a:["hablemos"]},
+    {q:"No creo que ___ (ser) verdad.", a:["sea"]},
+    {q:"Cuando ___ (yo, tener) tiempo, te llamo.", a:["tenga"]},
+    {q:"Espero que todo ___ (ir) bien.", a:["vaya"]},
+    {q:"Te lo explico para que lo ___ (entender).", a:["entiendas"]}
+  ],
+  speak:[
+    {fr:"Il faut que tu viennes avec nous.", es:"Es necesario que vengas con nosotros."},
+    {fr:"J'espère qu'il fasse beau demain.", es:"Espero que haga buen tiempo mañana."},
+    {fr:"Je ne pense pas que ce soit une bonne idée.", es:"No creo que sea una buena idea."},
+    {fr:"Quand j'aurai le temps, je t'appellerai.", es:"Cuando tenga tiempo, te llamaré."},
+    {fr:"Je veux que nous parlions en espagnol.", es:"Quiero que hablemos en español."}
+  ]
+},
+{ // Thursday
+  name:"Por / Para", title:"Por vs para",
+  lesson:`French <span class="fr">pour</span> covers both — that's why this one hurts. <b>PARA</b> = destination, purpose, deadline, recipient (para ti, para aprender, para el lunes). <b>POR</b> = cause, exchange, duration, movement through, "on behalf of" (por eso, por 20 euros, por la mañana, por el parque). Test: goal ahead of you → para; reason behind you → por.`,
+  fill:[
+    {q:"Este regalo es ___ ti.", a:["para"]},
+    {q:"Gracias ___ tu ayuda.", a:["por"]},
+    {q:"Estudio español ___ hablar con mi familia.", a:["para"]},
+    {q:"Caminamos ___ el centro de la ciudad.", a:["por"]},
+    {q:"Lo necesito ___ el viernes.", a:["para"]},
+    {q:"Lo compré ___ diez euros.", a:["por"]}
+  ],
+  speak:[
+    {fr:"Merci pour tout, c'est pour toi.", es:"Gracias por todo, es para ti."},
+    {fr:"Je travaille pour apprendre, pas pour l'argent.", es:"Trabajo para aprender, no por el dinero."},
+    {fr:"On se promène dans le parc le matin.", es:"Paseamos por el parque por la mañana."},
+    {fr:"C'est pour ça que je suis venu.", es:"Por eso vine."},
+    {fr:"Il me le faut pour lundi.", es:"Lo necesito para el lunes."}
+  ]
+},
+{ // Friday
+  name:"Pronombres", title:"Object pronouns — le, lo, la, se lo",
+  lesson:`Like French, pronouns go BEFORE the verb (lo veo = <span class="fr">je le vois</span>). Direct: <b>lo/la/los/las</b>. Indirect: <b>le/les</b>. The trap French doesn't have: when both appear, <b>le/les → SE</b>: <i>Se lo di</i> (je le lui ai donné) — never "le lo". With infinitives you may attach: <i>voy a dárselo</i>. Double marking is normal: <i>A María le gusta…</i>`,
+  fill:[
+    {q:"¿El libro? ___ leí ayer. <span class='hint'>(je l'ai lu)</span>", a:["lo"]},
+    {q:"___ escribí un mensaje a mi madre. <span class='hint'>(lui)</span>", a:["le"]},
+    {q:"¿Las llaves? Juan ___ tiene. <span class='hint'>(les a)</span>", a:["las"]},
+    {q:"El regalo, ___ ___ di a Ana ayer. <span class='hint'>(le lui — two words)</span>", a:["se lo"]},
+    {q:"A mis padres ___ encanta viajar.", a:["les"]},
+    {q:"Voy a decír___ mañana. <span class='hint'>(le lui dire → attach)</span>", a:["selo"]}
+  ],
+  speak:[
+    {fr:"Je le lui ai donné hier.", es:"Se lo di ayer."},
+    {fr:"Tu me l'envoies ce soir ?", es:"¿Me lo envías esta noche?"},
+    {fr:"Je vais le leur expliquer.", es:"Voy a explicárselo."},
+    {fr:"Elle ne me l'a pas dit.", es:"No me lo dijo."},
+    {fr:"Ce film, je l'ai déjà vu.", es:"Esa película ya la vi."}
+  ]
+},
+{ // Saturday
+  name:"Gustar & Cía.", title:"Gustar-verbs & daily reflexives",
+  lesson:`<b>Gustar</b> works backwards, like <span class="fr">ça me plaît</span> — the thing is the subject: <i>me gusta el café / me gustan los libros</i> (agree with the THING). Same family: <b>encantar, interesar, molestar, hacer falta, parecer</b>. Reflexive daily verbs where French differs: <b>despertarse, levantarse, ducharse, irse</b> (s'en aller), <b>acordarse de</b> (se souvenir), <b>darse cuenta de</b> (se rendre compte).`,
+  fill:[
+    {q:"Me ___ (encantar) las canciones antiguas.", a:["encantan"]},
+    {q:"¿Te ___ (gustar) este barrio?", a:["gusta"]},
+    {q:"A Juan le ___ (interesar) los idiomas.", a:["interesan"]},
+    {q:"No me ___ (acordar) de su nombre. <span class='hint'>(je ne me souviens pas)</span>", a:["acuerdo"]},
+    {q:"Nos ___ (ir) ya, es tarde. <span class='hint'>(on s'en va)</span>", a:["vamos"]},
+    {q:"Me ___ (dar) cuenta del error demasiado tarde.", a:["di"]}
+  ],
+  speak:[
+    {fr:"Ça me plaît beaucoup, cette ville.", es:"Me gusta mucho esta ciudad."},
+    {fr:"Les langues m'intéressent depuis toujours.", es:"Los idiomas me interesan desde siempre."},
+    {fr:"Je me lève à sept heures et je me douche.", es:"Me levanto a las siete y me ducho."},
+    {fr:"Je ne me souviens pas de son adresse.", es:"No me acuerdo de su dirección."},
+    {fr:"On s'en va ? Il se fait tard.", es:"¿Nos vamos? Se hace tarde."}
+  ]
+}
+];
+
+const DAYNAMES=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+let currentDay = new Date().getDay();
+
+// ---------- render ----------
+function norm(s){return s.toLowerCase().trim().replace(/\s+/g,' ');}
+
+function render(){
+  const m = MODULES[currentDay];
+  // day chips
+  document.getElementById('daybar').innerHTML = DAYNAMES.map((d,i)=>
+    `<button class="daychip ${i===currentDay?'active':''}" onclick="setDay(${i})">${d} · ${MODULES[i].name}</button>`).join('');
+
+  const fillHTML = m.fill.map((f,i)=>`
+    <div class="ex">
+      <div class="ex-q">${i+1}. ${f.q}</div>
+      <input class="answer" id="f${i}" autocomplete="off" autocapitalize="off" onfocus="lastInput=this"/>
+      <div class="feedback" id="fb${i}"></div>
+    </div>`).join('');
+
+  const speakHTML = m.speak.map((s,i)=>`
+    <div class="speak-item">
+      <div class="speak-src"><span class="flag">FR</span>${s.fr}</div>
+      <button class="reveal-btn" onclick="reveal(${i},this)">Say it in Spanish, then reveal</button>
+      <div class="speak-es" id="es${i}"><span class="flag" style="color:var(--marigold-deep);font-size:0.8rem;letter-spacing:0.08em">ES</span> ${s.es}<span class="note">Say it out loud twice more — once slow, once at normal speed.</span></div>
+    </div>`).join('');
+
+  document.getElementById('app').innerHTML = `
+    <section class="step">
+      <span class="step-tag">Paso 1 · Grammar</span>
+      <h2>${m.title}</h2>
+      <div class="mins">~7 minutes · read once, then fill the gaps</div>
+      <div class="lesson">${m.lesson}</div>
+      <div class="accents">${['á','é','í','ó','ú','ñ','ü','¿','¡'].map(c=>`<button class="acc" onclick="ins('${c}')">${c}</button>`).join('')}</div>
+      ${fillHTML}
+      <div class="checkrow">
+        <button class="check" onclick="checkAll()">Check answers</button>
+        <span class="score" id="score"></span>
+      </div>
+    </section>
+
+    <section class="step">
+      <span class="step-tag gold">Paso 2 · Speak</span>
+      <h2>Translation sprint — out loud</h2>
+      <div class="mins">~7 minutes · translate from French before revealing. Speaking means SPEAKING — voice on.</div>
+      ${speakHTML}
+      <div class="tipbox"><b>Last minute:</b> pick today's hardest sentence and say it 5 times from memory while doing something else (walking, making coffee). That's the rep that sticks.</div>
+    </section>`;
+  document.getElementById('score').textContent='';
+}
+
+function setDay(i){currentDay=i;render();window.scrollTo(0,0);}
+
+let lastInput=null;
+function ins(c){ if(lastInput){lastInput.value+=c;lastInput.focus();} }
+
+function checkAll(){
+  const m=MODULES[currentDay]; let good=0;
+  m.fill.forEach((f,i)=>{
+    const el=document.getElementById('f'+i), fb=document.getElementById('fb'+i);
+    const val=norm(el.value);
+    const hit=f.a.some(a=>norm(a)===val);
+    el.classList.remove('ok','bad'); fb.classList.remove('ok','bad');
+    if(hit){el.classList.add('ok');fb.classList.add('ok');fb.textContent='✓ correcto';good++;}
+    else{el.classList.add('bad');fb.classList.add('bad');fb.textContent='→ '+f.a[0];}
+  });
+  document.getElementById('score').textContent=`${good}/${m.fill.length}` + (good===m.fill.length?' — ¡perfecto!':'');
+}
+
+function reveal(i,btn){
+  document.getElementById('es'+i).style.display='block';
+  btn.style.display='none';
+}
+
+// ---------- timer ----------
+let secs=900, ticking=null;
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function toggleTimer(){
+  const b=document.getElementById('startBtn');
+  if(ticking){clearInterval(ticking);ticking=null;b.textContent='Start';return;}
+  b.textContent='Pause';
+  ticking=setInterval(()=>{
+    secs--; document.getElementById('timer').textContent=fmt(secs);
+    if(secs<=0){clearInterval(ticking);ticking=null;document.getElementById('timer').textContent='¡Hecho!';b.textContent='Start';}
+  },1000);
+}
+function resetTimer(){clearInterval(ticking);ticking=null;secs=900;document.getElementById('timer').textContent=fmt(secs);document.getElementById('startBtn').textContent='Start';}
+
+render();
+</script>
+</body>
+</html>
